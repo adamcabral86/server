@@ -9,10 +9,10 @@ echo "----------------------------------------------------"
 # --- Create Frontend Files in Project Root (if they don't exist) ---
 echo "Ensuring basic frontend files (index.html, style.css, script.js) exist in the project root..."
 
-# Create index.html if it doesn't exist
-# Check and create in the current directory (assuming script is run from project root)
-if [ ! -f "index.html" ]; then
-    cat <<EOL > index.html
+# Create index.html if it doesn't exist one directory up (project root)
+if [ ! -f "../index.html" ]; then
+    echo "Creating ../index.html..."
+    cat <<EOL > ../index.html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -29,12 +29,14 @@ if [ ! -f "index.html" ]; then
 </body>
 </html>
 EOL
+else
+    echo "../index.html already exists. Skipping creation."
 fi
 
-# Create style.css if it doesn't exist
-# Check and create in the current directory (assuming script is run from project root)
-if [ ! -f "style.css" ]; then
-    cat <<EOL > style.css
+# Create style.css if it doesn't exist one directory up (project root)
+if [ ! -f "../style.css" ]; then
+    echo "Creating ../style.css..."
+    cat <<EOL > ../style.css
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #e6f2ff;
@@ -59,12 +61,14 @@ button:hover {
     background-color: #004d99;
 }
 EOL
+else
+    echo "../style.css already exists. Skipping creation."
 fi
 
-# Create script.js if it doesn't exist
-# Check and create in the current directory (assuming script is run from project root)
-if [ ! -f "script.js" ]; then
-    cat <<EOL > script.js
+# Create script.js if it doesn't exist one directory up (project root)
+if [ ! -f "../script.js" ]; then
+    echo "Creating ../script.js..."
+    cat <<EOL > ../script.js
 document.addEventListener('DOMContentLoaded', () => {
     const button = document.getElementById('myButton');
     if (button) {
@@ -75,6 +79,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 EOL
+else
+    echo "../script.js already exists. Skipping creation."
 fi
 
 # --- Create and Setup Server Directory ---
