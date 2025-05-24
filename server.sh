@@ -6,13 +6,13 @@ echo "  Automated Node.js Server Setup & Dev Launch"
 echo "  (Frontend in root, server/server.js in 'server' folder)"
 echo "----------------------------------------------------"
 
-# --- Create Frontend Files in Current Directory (if they don't exist) ---
-echo "Ensuring basic frontend files (index.html, style.css, script.js) exist in the PARENT directory..."
+# --- Create Frontend Files in Project Root (if they don't exist) ---
+echo "Ensuring basic frontend files (index.html, style.css, script.js) exist in the project root..."
 
 # Create index.html if it doesn't exist
-# Checks and creates one directory above the current script's location
-if [ ! -f "../index.html" ]; then
-    cat <<EOL > ../index.html
+# Check and create in the current directory (assuming script is run from project root)
+if [ ! -f "index.html" ]; then
+    cat <<EOL > index.html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -32,9 +32,9 @@ EOL
 fi
 
 # Create style.css if it doesn't exist
-# Checks and creates one directory above the current script's location
-if [ ! -f "../style.css" ]; then
-    cat <<EOL > ../style.css
+# Check and create in the current directory (assuming script is run from project root)
+if [ ! -f "style.css" ]; then
+    cat <<EOL > style.css
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #e6f2ff;
@@ -62,9 +62,9 @@ EOL
 fi
 
 # Create script.js if it doesn't exist
-# Checks and creates one directory above the current script's location
-if [ ! -f "../script.js" ]; then
-    cat <<EOL > ../script.js
+# Check and create in the current directory (assuming script is run from project root)
+if [ ! -f "script.js" ]; then
+    cat <<EOL > script.js
 document.addEventListener('DOMContentLoaded', () => {
     const button = document.getElementById('myButton');
     if (button) {
@@ -79,8 +79,7 @@ fi
 
 # --- Create and Setup Server Directory ---
 echo "Creating and setting up the 'server/' directory..."
-# The original script had these commented out. Assuming the script is run from the project root,
-# the server files will be created in 'server/' relative to the current directory.
+# This assumes you are running the script from your project's root folder.
 mkdir -p server
 cd server
 
@@ -99,6 +98,7 @@ const browserSync = require('browser-sync');
 // __dirname is the current directory of this server.js file (e.g., '/your-project/server')
 // path.join(__dirname, '..') moves up one level to the parent directory ('/your-project')
 const staticFilesPath = path.join(__dirname, '..');
+console.log('Serving static files from:', staticFilesPath); // Added for debugging
 
 // Initialize Browser-Sync AFTER your Express app is configured
 // This will proxy requests to your Express app and watch for file changes
