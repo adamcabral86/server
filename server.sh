@@ -75,8 +75,8 @@ fi
 
 # --- Create and Setup Server Directory ---
 echo "Creating and setting up the 'server/' directory..."
-mkdir -p server
-cd server
+#mkdir -p server
+#cd server
 
 # Create server/server.js
 echo "Creating server/server.js..."
