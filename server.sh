@@ -10,7 +10,7 @@ echo "----------------------------------------------------"
 echo "Ensuring basic frontend files (index.html, style.css, script.js) exist..."
 
 # Create index.html if it doesn't exist
-if [ ! -f "index.html" ]; then
+if [ ! -f "../index.html" ]; then
     cat <<EOL > index.html
 <!DOCTYPE html>
 <html lang="en">
@@ -31,7 +31,7 @@ EOL
 fi
 
 # Create style.css if it doesn't exist
-if [ ! -f "style.css" ]; then
+if [ ! -f "../style.css" ]; then
     cat <<EOL > style.css
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -60,7 +60,7 @@ EOL
 fi
 
 # Create script.js if it doesn't exist
-if [ ! -f "script.js" ]; then
+if [ ! -f "../script.js" ]; then
     cat <<EOL > script.js
 document.addEventListener('DOMContentLoaded', () => {
     const button = document.getElementById('myButton');
