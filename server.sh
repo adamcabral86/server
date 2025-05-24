@@ -80,8 +80,6 @@ fi
 # --- Create and Setup Server Directory ---
 echo "Creating and setting up the 'server/' directory..."
 # This assumes you are running the script from your project's root folder.
-mkdir -p server
-cd server
 
 # Create server/server.js with Browser-Sync integration
 echo "Creating server/server.js with Browser-Sync integration..."
