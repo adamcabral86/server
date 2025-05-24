@@ -7,11 +7,10 @@ echo "  (Frontend in root, server/server.js in 'server' folder)"
 echo "----------------------------------------------------"
 
 # --- Create Frontend Files in Current Directory (if they don't exist) ---
-echo "Ensuring basic frontend files (index.html, style.css, script.js) exist..."
+echo "Ensuring basic frontend files (index.html, style.css, script.js) exist in the PARENT directory..."
 
 # Create index.html if it doesn't exist
-# Note: The original script was checking for `../index.html` but creating `index.html` in the current directory.
-# This has been adjusted to consistently check and create in the current directory.
+# Checks and creates one directory above the current script's location
 if [ ! -f "../index.html" ]; then
     cat <<EOL > ../index.html
 <!DOCTYPE html>
@@ -33,6 +32,7 @@ EOL
 fi
 
 # Create style.css if it doesn't exist
+# Checks and creates one directory above the current script's location
 if [ ! -f "../style.css" ]; then
     cat <<EOL > ../style.css
 body {
@@ -62,6 +62,7 @@ EOL
 fi
 
 # Create script.js if it doesn't exist
+# Checks and creates one directory above the current script's location
 if [ ! -f "../script.js" ]; then
     cat <<EOL > ../script.js
 document.addEventListener('DOMContentLoaded', () => {
@@ -143,17 +144,12 @@ then
     jq '.scripts["start-dev"] = "nodemon server.js"' package.json > temp.json && mv temp.json package.json
 else
     # Fallback for systems without jq (less robust)
-    # This sed command is for macOS/BSD. For GNU/Linux, 'sed -i' is enough.
-    # We'll use a more robust fallback for cross-platform compatibility.
     echo "jq not found. Attempting to manually add start-dev script. Please verify package.json."
     # Read package.json, add script, write back.
     # This is a simplified approach and might not handle all edge cases.
     PKG_JSON_CONTENT=$(cat package.json)
     if [[ ! "$PKG_JSON_CONTENT" =~ \"start-dev\": ]]; then
         # If start-dev doesn't exist, add it.
-        # This regex looks for the last closing brace of the "scripts" object.
-        # It's a bit fragile but better than nothing without jq.
-        # It assumes "scripts" exists and has at least one entry.
         NEW_PKG_JSON_CONTENT=$(echo "$PKG_JSON_CONTENT" | sed -E 's/("scripts": \{[^}]*\})/\1,\n    "start-dev": "nodemon server.js"/')
         echo "$NEW_PKG_JSON_CONTENT" > package.json
     else
