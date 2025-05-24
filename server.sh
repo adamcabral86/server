@@ -61,7 +61,7 @@ fi
 
 # Create script.js if it doesn't exist
 if [ ! -f "../script.js" ]; then
-    cat <<EOL > script.js
+    cat <<EOL > ../script.js
 document.addEventListener('DOMContentLoaded', () => {
     const button = document.getElementById('myButton');
     if (button) {
