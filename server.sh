@@ -10,7 +10,9 @@ echo "----------------------------------------------------"
 echo "Ensuring basic frontend files (index.html, style.css, script.js) exist..."
 
 # Create index.html if it doesn't exist
-if [ ! -f "../index.html" ]; then
+# Note: The original script was checking for `../index.html` but creating `index.html` in the current directory.
+# This has been adjusted to consistently check and create in the current directory.
+if [ ! -f "index.html" ]; then
     cat <<EOL > index.html
 <!DOCTYPE html>
 <html lang="en">
@@ -31,7 +33,7 @@ EOL
 fi
 
 # Create style.css if it doesn't exist
-if [ ! -f "../style.css" ]; then
+if [ ! -f "style.css" ]; then
     cat <<EOL > style.css
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -60,13 +62,14 @@ EOL
 fi
 
 # Create script.js if it doesn't exist
-if [ ! -f "../script.js" ]; then
-    cat <<EOL > ../script.js
+if [ ! -f "script.js" ]; then
+    cat <<EOL > script.js
 document.addEventListener('DOMContentLoaded', () => {
     const button = document.getElementById('myButton');
     if (button) {
         button.addEventListener('click', () => {
-            alert('JavaScript is running!');
+            // Using console.log instead of alert for better development experience
+            console.log('JavaScript is running and button was clicked!');
         });
     }
 });
@@ -75,21 +78,39 @@ fi
 
 # --- Create and Setup Server Directory ---
 echo "Creating and setting up the 'server/' directory..."
-#mkdir -p server
-#cd server
+# The original script had these commented out. Assuming the script is run from the project root,
+# the server files will be created in 'server/' relative to the current directory.
+mkdir -p server
+cd server
 
-# Create server/server.js
-echo "Creating server/server.js..."
+# Create server/server.js with Browser-Sync integration
+echo "Creating server/server.js with Browser-Sync integration..."
 cat <<EOL > server.js
 const express = require('express');
 const path = require('path');
 const app = express();
 const port = 3000;
 
+// Import Browser-Sync for live reloading
+const browserSync = require('browser-sync');
+
 // Determine the absolute path to the directory where static files are located.
 // __dirname is the current directory of this server.js file (e.g., '/your-project/server')
 // path.join(__dirname, '..') moves up one level to the parent directory ('/your-project')
 const staticFilesPath = path.join(__dirname, '..');
+
+// Initialize Browser-Sync AFTER your Express app is configured
+// This will proxy requests to your Express app and watch for file changes
+browserSync.init({
+    proxy: \`http://localhost:\${port}\`, // Proxy your Express app
+    files: [
+        path.join(staticFilesPath, '**/*.html'), // Watch HTML files in the parent directory and its subfolders
+        path.join(staticFilesPath, '**/*.css'),  // Watch CSS files
+        path.join(staticFilesPath, '**/*.js')   // Watch JS files
+    ],
+    port: 3001, // Browser-Sync UI will run on this port (optional, can be same as proxy if not using UI)
+    open: false // Set to true to automatically open browser on start
+});
 
 // Serve static files from the parent directory
 app.use(express.static(staticFilesPath));
@@ -99,19 +120,20 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(staticFilesPath, 'index.html'));
 });
 
-// Start the server
+// Start the Express server
 app.listen(port, () => {
-  console.log(\`Server listening at http://localhost:\${port}\`);
+  console.log(\`Express server listening at http://localhost:\${port}\`);
   console.log(\`Serving static files from: \${staticFilesPath}\`);
+  console.log(\`Browser-Sync UI available at http://localhost:3001 (if 'open' is false, visit manually)\`);
 });
 EOL
 
-# Initialize npm and install Express & Nodemon
+# Initialize npm and install Express, Nodemon, and Browser-Sync
 echo "Initializing npm project in server/..."
 npm init -y
 
-echo "Installing Express.js and Nodemon..."
-npm install express nodemon
+echo "Installing Express.js, Nodemon, and Browser-Sync..."
+npm install express nodemon browser-sync --save-dev
 
 # --- Configure package.json for Nodemon ---
 echo "Configuring package.json with 'start-dev' script..."
@@ -121,9 +143,24 @@ then
     jq '.scripts["start-dev"] = "nodemon server.js"' package.json > temp.json && mv temp.json package.json
 else
     # Fallback for systems without jq (less robust)
-    sed -i '' -e '/"test": "echo \\"Error: no test specified\\" && exit 1"/a\
-    "start-dev": "nodemon server.js",' package.json
-    echo "Warning: 'jq' not found. Manually verify 'start-dev' script in package.json if it seems incorrect."
+    # This sed command is for macOS/BSD. For GNU/Linux, 'sed -i' is enough.
+    # We'll use a more robust fallback for cross-platform compatibility.
+    echo "jq not found. Attempting to manually add start-dev script. Please verify package.json."
+    # Read package.json, add script, write back.
+    # This is a simplified approach and might not handle all edge cases.
+    PKG_JSON_CONTENT=$(cat package.json)
+    if [[ ! "$PKG_JSON_CONTENT" =~ \"start-dev\": ]]; then
+        # If start-dev doesn't exist, add it.
+        # This regex looks for the last closing brace of the "scripts" object.
+        # It's a bit fragile but better than nothing without jq.
+        # It assumes "scripts" exists and has at least one entry.
+        NEW_PKG_JSON_CONTENT=$(echo "$PKG_JSON_CONTENT" | sed -E 's/("scripts": \{[^}]*\})/\1,\n    "start-dev": "nodemon server.js"/')
+        echo "$NEW_PKG_JSON_CONTENT" > package.json
+    else
+        # If start-dev exists, update it.
+        NEW_PKG_JSON_CONTENT=$(echo "$PKG_JSON_CONTENT" | sed -E 's/("start-dev":\s*)"[^"]*"/\1"nodemon server.js"/')
+        echo "$NEW_PKG_JSON_CONTENT" > package.json
+    fi
 fi
 
 
