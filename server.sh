@@ -12,8 +12,8 @@ echo "Ensuring basic frontend files (index.html, style.css, script.js) exist..."
 # Create index.html if it doesn't exist
 # Note: The original script was checking for `../index.html` but creating `index.html` in the current directory.
 # This has been adjusted to consistently check and create in the current directory.
-if [ ! -f "index.html" ]; then
-    cat <<EOL > index.html
+if [ ! -f "../index.html" ]; then
+    cat <<EOL > ../index.html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,8 +33,8 @@ EOL
 fi
 
 # Create style.css if it doesn't exist
-if [ ! -f "style.css" ]; then
-    cat <<EOL > style.css
+if [ ! -f "../style.css" ]; then
+    cat <<EOL > ../style.css
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #e6f2ff;
@@ -62,8 +62,8 @@ EOL
 fi
 
 # Create script.js if it doesn't exist
-if [ ! -f "script.js" ]; then
-    cat <<EOL > script.js
+if [ ! -f "../script.js" ]; then
+    cat <<EOL > ../script.js
 document.addEventListener('DOMContentLoaded', () => {
     const button = document.getElementById('myButton');
     if (button) {
